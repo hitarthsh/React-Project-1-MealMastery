@@ -1,12 +1,16 @@
 import { nanoid } from "nanoid/non-secure";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { recipecontext } from "../context/RecipeContext";
 
 const Create = () => {
-  const { register, handleSubmit } = useForm();
+  const { data, setdata } = useContext(recipecontext);
+  const { register, handleSubmit, reset } = useForm();
 
-  const SubmitHandler = (data) => {
-    data.id = nanoid();
-    console.log(data);
+  const SubmitHandler = (recipe) => {
+    recipe.id = nanoid();
+    setdata([...data, recipe]);
+    reset();
   };
   return (
     <form onSubmit={handleSubmit(SubmitHandler)}>
@@ -29,7 +33,7 @@ const Create = () => {
         className="block border-b outline-0 p-2"
         {...register("chef")}
         type="text"
-        placeholder="Recipe Title"
+        placeholder="Chef Name"
       />
 
       <textarea
