@@ -5,9 +5,9 @@ export const recipecontext = createContext(null);
 const RecipeContext = () => {
   const [data, setdata] = useState([]);
   return (
-    <recipecontext.prototype value={{ data, setdata }}>
+    <recipecontext.Provider value={{ data, setdata }}>
       RecipeContext
-    </recipecontext.prototype>
+    </recipecontext.Provider>
   );
 };
 
