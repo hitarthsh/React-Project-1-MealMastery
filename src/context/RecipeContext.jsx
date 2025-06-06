@@ -2,11 +2,11 @@ import { createContext, useState } from "react";
 
 export const recipecontext = createContext(null);
 
-const RecipeContext = () => {
+const RecipeContext = (props) => {
   const [data, setdata] = useState([]);
   return (
     <recipecontext.Provider value={{ data, setdata }}>
-      RecipeContext
+      {props.children}
     </recipecontext.Provider>
   );
 };
