@@ -27,7 +27,7 @@ const SingleRecipe = () => {
     },
   });
 
-  const SubmitHandler = (updatedRecipe) => {
+  const UpdatedHandler = (updatedRecipe) => {
     const index = data.findIndex((r) => params.id == r.id);
     const copydata = [...data];
     copydata[index] = { ...copydata[index], ...updatedRecipe };
@@ -55,7 +55,7 @@ const SingleRecipe = () => {
         <p>{recipe.demo}</p>
       </div>
 
-      <form className="w-1/2 p-2" onSubmit={handleSubmit(SubmitHandler)}>
+      <form className="w-1/2 p-2" onSubmit={handleSubmit(UpdatedHandler)}>
         <input
           className="block border-b outline-0 p-2"
           {...register("image")}
