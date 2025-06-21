@@ -17,6 +17,7 @@ const Create = () => {
     reset();
     navigate("/recipes");
   };
+  
   return (
     <form onSubmit={handleSubmit(SubmitHandler)}>
       <input
