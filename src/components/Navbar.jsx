@@ -24,6 +24,12 @@ const Navbar = () => {
       >
         Create Recipes
       </NavLink>
+      <NavLink
+        className={(e) => (e.isActive ? "text-red-300" : "")}
+        to="/fav"
+      >
+        Favorite
+      </NavLink>
     </div>
   );
 };
