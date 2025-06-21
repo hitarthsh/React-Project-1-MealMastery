@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 const RecipeCard = (props) => {
-  const { id, image, title, desc, chef } = props.recipe;
+  const { id, image, title, demo, chef } = props.recipe;
   return (
     <Link
       to={`/recipes/details/${id}`}
@@ -11,7 +11,8 @@ const RecipeCard = (props) => {
       <h1 className="px-2 mt-2 font-black">{title}</h1>Add commentMore actions
       <small className="px-2 text-red-400">{chef}</small>
       <p className="px-2 pb-3">
-        {desc.slice(0, 100)}... <small className="text-blue-400">more</small>
+        {demo.slice(0, 100)}...
+        <small className="text-blue-400">more</small>
       </p>
     </Link>
   );
