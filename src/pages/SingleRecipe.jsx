@@ -44,9 +44,33 @@ const SingleRecipe = () => {
     };
   }, []);
 
+  const favroite = JSON.parse(localStorage.getItem("fav")) || [];
+
+  const FavHandler = () => {
+    favroite.push(recipe);
+    localStorage.setItem("fav", JSON.stringify(favroite));
+  };
+
+  const UnFavHandler = () => {
+    const filterfav = favroite.filter((f) => r.id != recipe?.id);
+    localStorage.setItem("fav", JSON.stringify(favroite));
+  };
+
   return recipe ? (
     <div className="w-full flex">
-      <div className="left w-1/2 p-2">
+      <div className="relative left w-1/2 p-10">
+        {favroite.find((f) => f.id == recipe?.id) ? (
+          <i
+            onClick={UnFavHandler}
+            className="absolute right-[5%] text-3xl text-red-400 ri-heart-fill"
+          ></i>
+        ) : (
+          <i
+            onClick={FavHandler}
+            className="absolute right-[5%] text-3xl text-red-400 ri-heart-line"
+          ></i>
+        )}
+
         <h1 className="text-5xl font-black">{recipe?.title}</h1>
         <img className="h-[20vh]" src={recipe?.image} alt="" />
         <h1>{recipe.chef}</h1>
