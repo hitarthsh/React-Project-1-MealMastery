@@ -1,3 +1,4 @@
+import React from "react";
 import { useContext } from "react";
 import { recipecontext } from "../context/RecipeContext";
 import RecipeCard from "../components/RecipeCard";
