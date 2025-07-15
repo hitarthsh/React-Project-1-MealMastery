@@ -10,7 +10,7 @@ const SingleRecipe = () => {
   const navigate = useNavigate();
   const params = useParams();
   const recipe = data.find((recipe) => params.id == recipe.id);
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit } = useForm({
     defaultValues: {
       title: recipe?.title,
       chef: recipe?.chef,
@@ -53,8 +53,8 @@ const SingleRecipe = () => {
   };
 
   const UnFavHandler = () => {
-    const filterfav = favroite.filter((f) => r.id != recipe?.id);
-    localStorage.setItem("fav", JSON.stringify(favroite));
+    const filterfav = favroite.filter((f) => f.id != recipe?.id);
+    localStorage.setItem("fav", JSON.stringify(filterfav));
   };
 
   return recipe ? (
