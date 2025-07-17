@@ -1,5 +1,4 @@
-import React from "react";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { recipecontext } from "../context/RecipeContext";
 import { useForm } from "react-hook-form";
@@ -9,33 +8,60 @@ const SingleRecipe = () => {
   const { data, setdata } = useContext(recipecontext);
   const navigate = useNavigate();
   const params = useParams();
-  const recipe = data.find((recipe) => params.id == recipe.id);
-  const { register, handleSubmit } = useForm({
-    defaultValues: {
-      title: recipe?.title,
-      chef: recipe?.chef,
-      image: recipe?.image,
-      inst: recipe?.inst,
-      desc: recipe?.desc,
-      ingr: recipe?.ingr,
-    },
-  });
 
-  const SubmitHandler = (recipe) => {
-    const index = data.findIndex((recipe) => params.id == recipe.id);
-    const copydata = [...data];
-    copydata[index] = { ...copydata[index], ...recipe };
-    setdata(copydata);
-    localStorage.setItem("recipes", JSON.stringify(copydata));
-    toast.success("Recipe updated!");
+  const recipe = data.find((recipe) => recipe.id == params.id);
+
+  const { register, handleSubmit, reset } = useForm();
+
+  const [favroite, setfavroite] = useState(
+    JSON.parse(localStorage.getItem("fav")) || []
+  );
+
+  useEffect(() => {
+    if (recipe) {
+      reset({
+        title: recipe.title,
+        chef: recipe.chef,
+        image: recipe.image,
+        inst: recipe.inst,
+        desc: recipe.desc,
+        ingr: recipe.ingr,
+        category: recipe.category,
+      });
+    }
+  }, [recipe, reset]);
+
+  const SubmitHandler = (updatedRecipe) => {
+    const index = data.findIndex((r) => r.id == params.id);
+    if (index !== -1) {
+      const copydata = [...data];
+      copydata[index] = { ...copydata[index], ...updatedRecipe };
+      setdata(copydata);
+      localStorage.setItem("recipes", JSON.stringify(copydata));
+      toast.success("Recipe updated!");
+    }
   };
 
   const DeleteHandler = () => {
     const filterdata = data.filter((r) => r.id != params.id);
     setdata(filterdata);
     localStorage.setItem("recipes", JSON.stringify(filterdata));
-    toast.success("recipe deleted!");
+    toast.success("Recipe deleted!");
     navigate("/recipes");
+  };
+
+  const FavHandler = () => {
+    if (!favroite.find((f) => f.id === recipe?.id)) {
+      const copyfav = [...favroite, recipe];
+      setfavroite(copyfav);
+      localStorage.setItem("fav", JSON.stringify(copyfav));
+    }
+  };
+
+  const UnFavHandler = () => {
+    const filterfav = favroite.filter((f) => f.id != recipe?.id);
+    setfavroite(filterfav);
+    localStorage.setItem("fav", JSON.stringify(filterfav));
   };
 
   useEffect(() => {
@@ -45,53 +71,43 @@ const SingleRecipe = () => {
     };
   }, []);
 
-  const favroite = JSON.parse(localStorage.getItem("fav")) || [];
-
-  const FavHandler = () => {
-    favroite.push(recipe);
-    localStorage.setItem("fav", JSON.stringify(favroite));
-  };
-
-  const UnFavHandler = () => {
-    const filterfav = favroite.filter((f) => f.id != recipe?.id);
-    localStorage.setItem("fav", JSON.stringify(filterfav));
-  };
-
   return recipe ? (
-    <div className="w-full flex">
-      <div className="relative left w-1/2 p-10">
+    <div className="w-full flex flex-col md:flex-row">
+      <div className="relative w-full md:w-1/2 p-10">
         {favroite.find((f) => f.id == recipe?.id) ? (
           <i
             onClick={UnFavHandler}
-            className="absolute right-[5%] text-3xl text-red-400 ri-heart-fill"
+            className="absolute right-[5%] text-3xl text-red-400 ri-heart-fill cursor-pointer"
           ></i>
         ) : (
           <i
             onClick={FavHandler}
-            className="absolute right-[5%] text-3xl text-red-400 ri-heart-line"
+            className="absolute right-[5%] text-3xl text-red-400 ri-heart-line cursor-pointer"
           ></i>
         )}
 
         <h1 className="text-5xl font-black">{recipe?.title}</h1>
-        <img className="h-[20vh]" src={recipe?.image} alt="" />
-        <h1>{recipe.chef}</h1>
-        <p>{recipe.desc}</p>
+        <img className="h-[20vh] object-cover" src={recipe?.image} alt={recipe?.title} />
+        <h2 className="text-xl font-semibold mt-2">{recipe?.chef}</h2>
+        <p className="mt-2">{recipe?.desc}</p>
       </div>
 
-      <form className="w-1/2 p-2" onSubmit={handleSubmit(SubmitHandler)}>
+      <form className="w-full md:w-1/2 p-4" onSubmit={handleSubmit(SubmitHandler)}>
         <input
           className="block border-b outline-0 p-2"
           {...register("image")}
           type="url"
           placeholder="Enter Image Url"
         />
-        <small className="text-red-400">THis is how the error is shown</small>
+        <small className="text-red-400">This is how the error is shown</small>
+
         <input
           className="block border-b outline-0 p-2"
           {...register("title")}
           type="text"
           placeholder="Recipe Title"
         />
+
         <input
           className="block border-b outline-0 p-2"
           {...register("chef")}
@@ -100,7 +116,6 @@ const SingleRecipe = () => {
         />
 
         <textarea
-          value={recipe.desc}
           className="block border-b outline-0 p-2"
           {...register("desc")}
           placeholder="//start from here"
@@ -109,13 +124,13 @@ const SingleRecipe = () => {
         <textarea
           className="block border-b outline-0 p-2"
           {...register("ingr")}
-          placeholder="//write ingredients seperated by comma"
+          placeholder="//write ingredients separated by comma"
         ></textarea>
 
         <textarea
           className="block border-b outline-0 p-2"
           {...register("inst")}
-          placeholder="//write instructions seperated by comma"
+          placeholder="//write instructions separated by comma"
         ></textarea>
 
         <select
@@ -128,19 +143,20 @@ const SingleRecipe = () => {
           <option value="dinner">Dinner</option>
         </select>
 
-        <button className="mt-5 block bg-blue-900 px-4 py-2 rounded">
+        <button className="mt-5 block bg-blue-900 text-white px-4 py-2 rounded">
           Update Recipe
         </button>
         <button
+          type="button"
           onClick={DeleteHandler}
-          className="mt-5 block bg-red-900 px-4 py-2 rounded"
+          className="mt-3 block bg-red-700 text-white px-4 py-2 rounded"
         >
           Delete Recipe
         </button>
       </form>
     </div>
   ) : (
-    "Loading..."
+    <div className="text-center py-10">Loading...</div>
   );
 };
 
