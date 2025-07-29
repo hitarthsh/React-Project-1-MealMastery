@@ -1,5 +1,4 @@
-import React from "react";
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { recipecontext } from "../context/RecipeContext";
 import { useForm } from "react-hook-form";
@@ -38,24 +37,34 @@ const SingleRecipe = () => {
     navigate("/recipes");
   };
 
+  const [favroite, setfavroite] = useState(() => {
+    try {
+      const fav = JSON.parse(localStorage.getItem("fav"));
+      return Array.isArray(fav) ? fav : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const FavHandler = () => {
+    let copyfav = [...favroite];
+    copyfav.push(recipe);
+    setfavroite(copyfav);
+    localStorage.setItem("fav", JSON.stringify(copyfav));
+  };
+
+  const UnFavHandler = () => {
+    const filterfav = favroite.filter((f) => f.id != recipe?.id);
+    setfavroite(filterfav);
+    localStorage.setItem("fav", JSON.stringify(filterfav));
+  };
+
   useEffect(() => {
     console.log("SingleRecipe.jsx Mounted");
     return () => {
       console.log("SingleRecipe.jsx Unmount");
     };
-  }, []);
-
-  const favroite = JSON.parse(localStorage.getItem("fav")) || [];
-
-  const FavHandler = () => {
-    favroite.push(recipe);
-    localStorage.setItem("fav", JSON.stringify(favroite));
-  };
-
-  const UnFavHandler = () => {
-    const filterfav = favroite.filter((f) => f.id != recipe?.id);
-    localStorage.setItem("fav", JSON.stringify(filterfav));
-  };
+  }, [favroite]);
 
   return recipe ? (
     <div className="w-full flex">
