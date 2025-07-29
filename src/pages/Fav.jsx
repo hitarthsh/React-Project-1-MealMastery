@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
 
 const Fav = () => {
-  const favorite = JSON.parse(localStorage.getItem("fav") || "[]");
+  const [favroite, setfavroite] = useState([]);
 
-  const renderRecipes = favorite.map((recipe) => (
-    <RecipeCard key={recipe.id} recipe={recipe} />
-  ));
+  useEffect(() => {
+    const favFromStorage = JSON.parse(localStorage.getItem("fav") || "[]");
+    setfavroite(favFromStorage);
+  }, []);
 
   return (
-    <div className="flex flex-wrap">
-      {favorite.length > 0 ? renderRecipes : "No recipes found!"}
+    <div className="flex flex-wrap gap-4 p-4">
+      {favroite.length > 0 ? (
+        favroite.map((recipe) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))
+      ) : (
+        <p className="text-gray-600 text-lg">No favorite recipes found!</p>
+      )}
     </div>
   );
 };
